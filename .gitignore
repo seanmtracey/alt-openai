@@ -1,2 +1,4 @@
 .env
 alt-llava
+images/*
+.DS_Store
