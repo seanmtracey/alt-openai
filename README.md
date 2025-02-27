@@ -22,6 +22,8 @@ This will create a binary `alt-llava`.
 
 To run with minimal configuration, you will need to set at least 1 environment variable: `IMAGE_URL` with a URL that links to an image. This image will be downloaded and stored at `./images` with a UUID and a file extension derived from the image's MIME type.
 
+[https://ollama.com](Ollama) must be running locally in order to accept and process the requests.
+
 `IMAGE_URL=<URL_TO_IMAGE> ./alt-llava`
 
 `alt-llava` will then generate the alt-text for the image and log it to the CLI.
