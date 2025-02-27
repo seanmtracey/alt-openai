@@ -1,6 +1,6 @@
 module alt-llava
 
-go 1.22.2
+go 1.20
 
 require (
 	github.com/fatih/color v1.18.0

@@ -18,6 +18,7 @@ import(
 
 var OLLAMA_PROTOCOL string
 var OLLAMA_PORT string
+var OLLAMA_HOST string
 
 var OLLAMA_ORIGIN string
 var OLLAMA_MODEL string = "llava"
@@ -33,16 +34,22 @@ func Init(settings map[string]interface{}){
 		OLLAMA_PORT = settings["port"].(string)
 	}
 
-	if settings["origin"] != nil {
-		OLLAMA_ORIGIN = settings["origin"].(string)
-	}
-
 	if settings["model"] != nil {
 		OLLAMA_MODEL = settings["model"].(string)
 	}
 
 	if settings["silent"] != nil {
 		SILENT_OUTPUT = settings["silent"].(bool)
+	}
+
+	if settings["host"] != nil {
+		OLLAMA_HOST = settings["host"].(string)
+	}
+
+	OLLAMA_ORIGIN = fmt.Sprintf("%s://%s:%s", OLLAMA_PROTOCOL, OLLAMA_HOST, OLLAMA_PORT)
+
+	if SILENT_OUTPUT == false {
+		log.Println( color.CyanString(`OLLAMA_ORIGIN set as "%s"`, OLLAMA_ORIGIN) )
 	}
 
 }

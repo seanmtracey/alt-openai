@@ -13,10 +13,9 @@ import(
 )
 
 var OLLAMA_PROTOCOL string
-var OLLAMA_HOST string
+var OLLAMA_HOSTNAME string
 var OLLAMA_PORT string
 
-var OLLAMA_ORIGIN string
 var OLLAMA_MODEL string = "llava"
 var SILENT_OUTPUT bool = false
 
@@ -31,7 +30,7 @@ func main(){
 	}
 
 	OLLAMA_PROTOCOL = os.Getenv("OLLAMA_PROTOCOL")
-	OLLAMA_HOST = os.Getenv("OLLAMA_HOST")
+	OLLAMA_HOSTNAME = os.Getenv("OLLAMA_HOSTNAME")
 	OLLAMA_PORT = os.Getenv("OLLAMA_PORT")
 
 	if os.Getenv("SILENT_OUTPUT") == "true" {
@@ -58,13 +57,13 @@ func main(){
 		OLLAMA_PROTOCOL = "http"
 	}
 
-	if OLLAMA_HOST == "" {
+	if OLLAMA_HOSTNAME == "" {
 
 		if SILENT_OUTPUT == false {
-			log.Println( color.YellowString(`OLLAMA_HOST environment variable is not set. Defaulting to "localhost".`) )
+			log.Println( color.YellowString(`OLLAMA_HOSTNAME environment variable is not set. Defaulting to "localhost".`) )
 		}
 
-		OLLAMA_HOST = "localhost"
+		OLLAMA_HOSTNAME = "localhost"
 
 	}
 
@@ -86,12 +85,6 @@ func main(){
 		OLLAMA_MODEL = os.Getenv("OLLAMA_MODEL")
 	}
 
-	OLLAMA_ORIGIN = fmt.Sprintf("%s://%s:%s", OLLAMA_PROTOCOL, OLLAMA_HOST, OLLAMA_PORT)
-
-	if SILENT_OUTPUT == false {
-		log.Println( color.CyanString(`OLLAMA_ORIGIN set as "%s"`, OLLAMA_ORIGIN) )
-	}
-
 	imageToRetrieve := os.Getenv("IMAGE_URL")
 
 	if imageToRetrieve == "" {
@@ -101,7 +94,7 @@ func main(){
 	altLlavaSettings := map[string]interface{}{
 		"protocol" : OLLAMA_PROTOCOL,
 		"port" : OLLAMA_PORT,
-		"origin" : OLLAMA_ORIGIN,
+		"host" : OLLAMA_HOSTNAME,
 		"model" : OLLAMA_MODEL,
 		"silent" : SILENT_OUTPUT,
 	}
