@@ -143,11 +143,13 @@ func main(){
 	}
 
 	if OLLAMA_HOST == "" {
-		log.Fatal( color.RedString("OLLAMA_HOST environment variable is not set. Exiting.") )
+		log.Println( color.YellowString(`OLLAMA_HOST environment variable is not set. Defaulting to "localhost".`) )
+		OLLAMA_HOST = "localhost"
 	}
 
 	if OLLAMA_PORT == "" {
-		log.Fatal( color.RedString("OLLAMA_PORT environment variable is not set. Exiting.") )
+		log.Println( color.YellowString(`OLLAMA_PORT environment variable is not set. Defaulting to 11434.`) )
+		OLLAMA_PORT = "11434"
 	}
 
 	if os.Getenv("OLLAMA_MODEL") != "" {
