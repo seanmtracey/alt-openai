@@ -26,11 +26,19 @@ To run with minimal configuration, you will need to set at least 1 environment v
 
 `alt-llava` will then generate the alt-text for the image and log it to the CLI.
 
+## Flags
+
+If you wish, you can write the output of `alt-llava` to a text file by passing the `--out` flag with the filepath you wish to write your results to.
+
+```bash
+./alt-llava --out="./output/results.txt"
+```
+
 ## Environment Variables.
 
 1. `OLLAMA_HOST` - The hostname where the Ollama server is running.
 2. `OLLAMA_PORT` - The port the Ollama server is listening on.
-3. 
+3. `SILENT_OUTPUT` - Only output the alt-text to `stdout`. Default: `false`
 4. `OLLAMA_MODEL` - The model that Ollama should run to generate the alt-text. Default: `llava`
 5. `OLLAMA_PROTOCOL` - `http` or `https`. Default: `http`
 6. `IMAGE_URL` - The image that should be downloaded, and have alt-text generated for.

@@ -2,3 +2,4 @@
 alt-llava
 images/*
 .DS_Store
+output/*
