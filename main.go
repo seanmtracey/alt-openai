@@ -134,7 +134,7 @@ func generateAltTextForImage(imageURL string) (string, error) {
 		responseString += part["response"].(string)
 	}
 
-	return responseString, nil
+	return strings.TrimSpace(responseString), nil
 
 }
 
