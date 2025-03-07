@@ -4,3 +4,4 @@ images/*
 .DS_Store
 output/*
 *.zip
+NOTES.md

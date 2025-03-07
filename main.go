@@ -118,4 +118,24 @@ func main(){
 
 	}
 
+	if os.Getenv("PUBLISH_TARGET") != "" {
+
+		publishTarget := os.Getenv("PUBLISH_TARGET")
+
+		switch publishTarget{
+			case "s3":
+
+				resultsKey, pubErr := altLlava.PublishAltTextResultsToS3(altText)
+
+				if pubErr != nil {
+					log.Println( color.RedString("Could not publish alt-text results to S3: %s", pubErr.Error()) )
+					return
+				}
+
+				log.Println(color.CyanString("Results written to S3 Bucket with Key: %s", resultsKey))
+
+		}
+
+	}
+
 }
