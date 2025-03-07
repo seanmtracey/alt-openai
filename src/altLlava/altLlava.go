@@ -211,8 +211,6 @@ func PublishAltTextResultsToS3(altText string) (string, error) {
 		return "", errors.New("S3_BUCKET environment variable has not been set. Cannot attempt upload to S3.")
 	}
 
-	fmt.Println(color.CyanString("Publishing to S3 with key: %s", keyID))
-
 	uploader, uploaderErr := s3uploader.NewS3Uploader(os.Getenv("S3_BUCKET"))
 	if uploaderErr != nil {
 		return "", uploaderErr

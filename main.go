@@ -18,6 +18,7 @@ var OLLAMA_PORT string
 
 var OLLAMA_MODEL string = "llava"
 var SILENT_OUTPUT bool = false
+var S3_KEY_ONLY bool = false
 
 var writeOutputFlag string
 var silentOutputFlag bool
@@ -26,7 +27,13 @@ func main(){
 
 	loadEnvErr := godotenv.Load()
 	if loadEnvErr != nil {
-		log.Println(color.YellowString("Could not find .env file. Continuing with system environment variables."))
+
+		if os.Getenv("SILENT_OUTPUT") != "true"{
+
+			log.Println(color.YellowString("Could not find .env file. Continuing with system environment variables."))
+
+		}
+
 	}
 
 	OLLAMA_PROTOCOL = os.Getenv("OLLAMA_PROTOCOL")
@@ -85,6 +92,10 @@ func main(){
 		OLLAMA_MODEL = os.Getenv("OLLAMA_MODEL")
 	}
 
+	if os.Getenv("S3_KEY_ONLY") == "true" {
+		S3_KEY_ONLY = true
+	}
+
 	imageToRetrieve := os.Getenv("IMAGE_URL")
 
 	if imageToRetrieve == "" {
@@ -106,8 +117,6 @@ func main(){
 	if altTextErr != nil {
 		log.Fatal( color.RedString(`Could not process image "%s": %s`, imageToRetrieve, altTextErr.Error()) )
 	}
-
-	fmt.Println(color.GreenString(altText))
 
 	if writeOutputFlag != ""{
 		writeOutputToFileErr := altLlava.WriteAltTextToFile(altText, writeOutputFlag)
@@ -132,10 +141,16 @@ func main(){
 					return
 				}
 
-				log.Println(color.CyanString("Results written to S3 Bucket with Key: %s", resultsKey))
+				if S3_KEY_ONLY == true {
+					fmt.Println(resultsKey)
+				}
 
 		}
 
+	}
+
+	if S3_KEY_ONLY != true {
+		fmt.Println(color.GreenString(altText))
 	}
 
 }

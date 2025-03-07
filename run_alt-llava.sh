@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # Start Ollama in the background
-ollama serve &
+OLLAMA_DEBUG=0 ollama serve > /dev/null 2>&1 &
 
 # Wait for Ollama to start
 sleep 5
