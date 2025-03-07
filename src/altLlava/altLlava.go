@@ -5,12 +5,14 @@ import(
 	"os"
 	"log"
 	"strings"
+	"errors"
 	"path/filepath"
 	"net/http"
 	"io/ioutil"
 	"encoding/base64"
 	
 	"alt-llava/src/ollamaInterface"
+	"alt-llava/src/s3uploader"
 	
 	"github.com/google/uuid"
 	"github.com/fatih/color"
@@ -187,4 +189,43 @@ func WriteAltTextToFile(altText, outputPath string) error {
     }
 
     return nil
+}
+
+func PublishAltTextResultsToS3(altText string) (string, error) {
+
+	keyID := fmt.Sprintf("%s", uuid.New())
+
+	if os.Getenv("AWS_REGION") == "" {
+		return "", errors.New("AWS_REGION environment variable has not been set. Will not attempt upload to S3.")
+	}
+
+	if os.Getenv("AWS_ACCESS_KEY_ID") == "" {
+		return "", errors.New("AWS_ACCESS_KEY_ID environment variable has not been set. Cannot attempt upload to S3.")
+	}
+
+	if os.Getenv("AWS_SECRET_ACCESS_KEY") == "" {
+		return "", errors.New("AWS_SECRET_ACCESS_KEY environment variable has not been set. Cannot attempt upload to S3.")
+	}
+
+	if os.Getenv("S3_BUCKET") == "" {
+		return "", errors.New("S3_BUCKET environment variable has not been set. Cannot attempt upload to S3.")
+	}
+
+	fmt.Println(color.CyanString("Publishing to S3 with key: %s", keyID))
+
+	uploader, uploaderErr := s3uploader.NewS3Uploader(os.Getenv("S3_BUCKET"))
+	if uploaderErr != nil {
+		return "", uploaderErr
+	}
+
+	content := []byte(altText)
+	contentType := "text/plain"
+
+	_, uploadErr := uploader.UploadFile(keyID, content, contentType)
+	if uploadErr != nil {
+		return "", uploadErr
+	}
+
+	return keyID, nil
+
 }
