@@ -3,3 +3,4 @@ alt-llava
 images/*
 .DS_Store
 output/*
+*.zip
