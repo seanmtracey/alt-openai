@@ -4,11 +4,11 @@ import(
 	"fmt"
 	"os"
 	"log"
+	"io"
 	"strings"
 	"errors"
 	"path/filepath"
 	"net/http"
-	"io/ioutil"
 	"encoding/base64"
 	
 	"alt-llava/src/ollamaInterface"
@@ -56,78 +56,46 @@ func Init(settings map[string]interface{}){
 
 }
 
-func downloadImageFromURLToDir(url, dest string) (string, error) {
+func downloadImageFromURL(url string) ([]byte, error) {
+    if SILENT_OUTPUT == false {
+        log.Println(color.CyanString(`Attempting to download image from "%s"`, url))
+    }
 
-	outputFileUUID := uuid.New().String()
-
-	if SILENT_OUTPUT == false {
-		log.Println( color.CyanString(`Attempting to download image from "%s" and store it in "%s"`, url, dest) )
-	}
-
-	// Go and get the file from the passed URL...
-	response, httpErr := http.Get(url)
-    if httpErr != nil {
-		log.Println( color.RedString("Failed to get file from URL: %s", httpErr.Error() ) )
-		return "", httpErr
+    // Make an HTTP GET request.
+    response, err := http.Get(url)
+    if err != nil {
+        log.Println(color.RedString("Failed to get file from URL: %s", err.Error()))
+        return nil, err
     }
     defer response.Body.Close()
 
-	fileBytes, readBytesErr := ioutil.ReadAll(response.Body)
-	if readBytesErr != nil {
-		log.Println( color.RedString(`Could not read bytes for mimetype section from URL "%s": %s`, url, readBytesErr.Error() ) )
-		return "", readBytesErr
-	}
-
-	mimeType := http.DetectContentType(fileBytes)
-	imageExtension := strings.Split(mimeType, "/")[1]
-	outputFilePath := fmt.Sprintf("%s/%s.%s", dest, outputFileUUID, imageExtension)
-
-	// Create a file on the system to put it...
-	file, fileCreationErr := os.Create(outputFilePath)
-    if fileCreationErr != nil {
-		log.Println( color.RedString(`Failed to get create file "%s" for storage: %s`, dest, fileCreationErr.Error() ) )
-		return "", fileCreationErr
+    // Read the response body into a []byte.
+    fileBytes, readBytesErr := io.ReadAll(response.Body)
+    if readBytesErr != nil {
+        log.Println(color.RedString(`Could not read bytes for mimetype section from URL "%s": %s`, url, readBytesErr.Error()))
+        return nil, readBytesErr
     }
-    defer file.Close()
 
-	// ... and then dump the bytes into the file 👍
-	_, fileWriteErr := file.Write(fileBytes)
-	if fileWriteErr != nil {
-		log.Println( color.RedString(`Could not write HTTP response body (%s) to file "%s": %s`, url, dest, fileWriteErr.Error() ) )
-		return "", fileWriteErr
-	}
-
-	return outputFilePath, nil
-
+    // Return the file bytes and the filename (or extension).
+    return fileBytes, nil
 }
 
-func convertImageToBase64(imagePath string) (string, error) {
-    // Read the file into a []byte
-    fileData, err := os.ReadFile(imagePath)
-    if err != nil {
-        return "", err
-    }
-
-    // Encode the bytes to a base64 string
-    encoded := base64.StdEncoding.EncodeToString(fileData)
-    return encoded, nil
+// convertImageBytesToBase64 takes image data as []byte and returns the base64-encoded string.
+func convertImageBytesToBase64(imageBytes []byte) (string) {
+    encoded := base64.StdEncoding.EncodeToString(imageBytes)
+    return encoded
 }
 
 func GenerateAltTextForImage(imageURL string) (string, error) {
 
-	imagePath, downloadErr := downloadImageFromURLToDir(imageURL, "./images")
+	imgData, downloadErr := downloadImageFromURL(imageURL)
 
 	if downloadErr != nil {
 		log.Println( color.RedString(`Could not download "%s" image for processing: %s`, imageURL, downloadErr.Error()) )
 		return "", downloadErr
 	}
 
-	base64, b64Err := convertImageToBase64(imagePath)
-
-	if b64Err != nil {
-		log.Println( color.RedString(`Failed to convert image "%s" to Base 64 encoding: %s`, imagePath, b64Err.Error()) )
-		return "", b64Err
-	}
+	base64 := convertImageBytesToBase64(imgData)
 
 	if SILENT_OUTPUT == false {
 		log.Println(color.MagentaString("Base64 image data: %s...", base64[:50]))
