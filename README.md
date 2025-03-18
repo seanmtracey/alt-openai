@@ -44,5 +44,6 @@ If you wish, you can write the output of `alt-llava` to a text file by passing t
 4. `OLLAMA_MODEL` - The model that Ollama should run to generate the alt-text. Default: `llava`
 5. `OLLAMA_PROTOCOL` - `http` or `https`. Default: `http`
 6. `IMAGE_URL` - The image that should be downloaded, and have alt-text generated for.
+7. `PROMPT_TEXT` - The prompt for the LVM that you'd like to use to describe the intended output for the model.
 
 

@@ -88,6 +88,12 @@ func convertImageBytesToBase64(imageBytes []byte) (string) {
 
 func GenerateAltTextForImage(imageURL string) (string, error) {
 
+	PROMPT_TEXT := os.Getenv("PROMPT_TEXT")
+
+	if PROMPT_TEXT == "" {
+		PROMPT_TEXT = "Briefly, what is in this image?"
+	}
+
 	imgData, downloadErr := downloadImageFromURL(imageURL)
 
 	if downloadErr != nil {
@@ -105,7 +111,7 @@ func GenerateAltTextForImage(imageURL string) (string, error) {
 
 	prompt := map[string]interface{}{
 		"model" : OLLAMA_MODEL,
-		"prompt" : "Briefly, what is in this image?",
+		"prompt" : PROMPT_TEXT,
 		"images" : []string{
 			base64,
 		},
