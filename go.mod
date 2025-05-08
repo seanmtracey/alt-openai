@@ -1,4 +1,4 @@
-module alt-llava
+module alt-openai
 
 go 1.22
 

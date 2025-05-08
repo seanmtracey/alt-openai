@@ -1,11 +1,11 @@
-# alt-llava
-A super-simple utility for generating alt-text for images using the LVM "llava" via Ollama.
+# alt-openai
+A super-simple utility for generating alt-text for images using OpenAI
 
 ## Building + Running
 
 First, clone this repo to your local system:
 
-`git clone https://github.com/seanmtracey/alt-llava`
+`git clone https://github.com/seanmtracey/alt-openai`
 
 ### Building
 
@@ -16,7 +16,7 @@ go mod tidy # Install dependencies
 go build . 
 ```
 
-This will create a binary `alt-llava`.
+This will create a binary `alt-openai`.
 
 ### Running
 
@@ -24,16 +24,16 @@ To run with minimal configuration, you will need to set at least 1 environment v
 
 [https://ollama.com](Ollama) must be running locally in order to accept and process the requests.
 
-`IMAGE_URL=<URL_TO_IMAGE> ./alt-llava`
+`IMAGE_URL=<URL_TO_IMAGE> ./alt-openai`
 
-`alt-llava` will then generate the alt-text for the image and log it to the CLI.
+`alt-openai` will then generate the alt-text for the image and log it to the CLI.
 
 ## Flags
 
-If you wish, you can write the output of `alt-llava` to a text file by passing the `--out` flag with the filepath you wish to write your results to.
+If you wish, you can write the output of `alt-openai` to a text file by passing the `--out` flag with the filepath you wish to write your results to.
 
 ```bash
-./alt-llava --out="./output/results.txt"
+./alt-openai --out="./output/results.txt"
 ```
 
 ## Environment Variables.

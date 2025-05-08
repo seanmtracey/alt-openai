@@ -6,17 +6,15 @@ import(
 	"log"
 	"flag"
 
-	"alt-llava/src/altLlava"
+	"alt-openai/src/altOpenAI"
 
 	"github.com/fatih/color"
 	"github.com/joho/godotenv"
 )
 
-var OLLAMA_PROTOCOL string
-var OLLAMA_HOSTNAME string
-var OLLAMA_PORT string
-
-var OLLAMA_MODEL string = "llava"
+var OPEN_AI_ORIGIN string
+var OPEN_AI_KEY string
+var OPEN_AI_MODEL string = "gpt-4-turbo"
 var SILENT_OUTPUT bool = false
 var S3_KEY_ONLY bool = false
 
@@ -36,9 +34,8 @@ func main(){
 
 	}
 
-	OLLAMA_PROTOCOL = os.Getenv("OLLAMA_PROTOCOL")
-	OLLAMA_HOSTNAME = os.Getenv("OLLAMA_HOSTNAME")
-	OLLAMA_PORT = os.Getenv("OLLAMA_PORT")
+	OPEN_AI_ORIGIN = os.Getenv("OPEN_AI_ORIGIN")
+	OPEN_AI_KEY = os.Getenv("OPEN_AI_KEY")
 
 	if os.Getenv("SILENT_OUTPUT") == "true" {
 		SILENT_OUTPUT = true
@@ -55,41 +52,32 @@ func main(){
 		SILENT_OUTPUT = true
 	}
 
-	if OLLAMA_PROTOCOL == "" {
+	if OPEN_AI_ORIGIN == "" {
 
 		if SILENT_OUTPUT == false {
-			log.Println( color.YellowString("OLLAMA_PROTOCOL environment variable is not set. Defaulting to HTTP...") )
+			log.Println( color.YellowString(`OPEN_AI_ORIGIN environment variable is not set. Defaulting to "api.openai.com".`) )
 		}
 
-		OLLAMA_PROTOCOL = "http"
-	}
-
-	if OLLAMA_HOSTNAME == "" {
-
-		if SILENT_OUTPUT == false {
-			log.Println( color.YellowString(`OLLAMA_HOSTNAME environment variable is not set. Defaulting to "localhost".`) )
-		}
-
-		OLLAMA_HOSTNAME = "localhost"
+		OPEN_AI_ORIGIN = "api.openai.com"
 
 	}
 
-	if OLLAMA_PORT == "" {
+	if OPEN_AI_ORIGIN == "" {
+
+		log.Println( color.RedString(`OPEN_AI_KEY environment variable is not set. Exiting...`) )
+
+		os.Exit(1)
+
+	}
+
+	if os.Getenv("OPEN_AI_MODEL") != "" {
 		
 		if SILENT_OUTPUT == false {
-			log.Println( color.YellowString(`OLLAMA_PORT environment variable is not set. Defaulting to 11434.`) )
-		}
-		OLLAMA_PORT = "11434"
-
-	}
-
-	if os.Getenv("OLLAMA_MODEL") != "" {
-		
-		if SILENT_OUTPUT == false {
-			log.Println( color.MagentaString(`Setting model with OLLAMA_MODEL environment variable to "%s"`, os.Getenv("OLLAMA_MODEL") ) )
+			log.Println( color.MagentaString(`Setting model with OPEN_AI_MODEL environment variable to "%s"`, os.Getenv("OPEN_AI_MODEL") ) )
 		}
 
-		OLLAMA_MODEL = os.Getenv("OLLAMA_MODEL")
+		OPEN_AI_MODEL = os.Getenv("OPEN_AI_MODEL")
+
 	}
 
 	if os.Getenv("S3_KEY_ONLY") == "true" {
@@ -102,24 +90,23 @@ func main(){
 		log.Fatal(color.RedString(`No IMAGE_URL was passed for processing. Exiting...`))
 	}
 
-	altLlavaSettings := map[string]interface{}{
-		"protocol" : OLLAMA_PROTOCOL,
-		"port" : OLLAMA_PORT,
-		"host" : OLLAMA_HOSTNAME,
-		"model" : OLLAMA_MODEL,
+	openAISettings := map[string]interface{}{
+		"origin" : OPEN_AI_ORIGIN,
+		"model" : OPEN_AI_MODEL,
+		"api_key" : OPEN_AI_KEY,
 		"silent" : SILENT_OUTPUT,
 	}
 
-	altLlava.Init(altLlavaSettings)
+	altOpenAI.Init(openAISettings)
 
-	altText, altTextErr := altLlava.GenerateAltTextForImage(imageToRetrieve)
+	altText, altTextErr := altOpenAI.GenerateAltTextForImage(imageToRetrieve)
 
 	if altTextErr != nil {
 		log.Fatal( color.RedString(`Could not process image "%s": %s`, imageToRetrieve, altTextErr.Error()) )
 	}
 
 	if writeOutputFlag != ""{
-		writeOutputToFileErr := altLlava.WriteAltTextToFile(altText, writeOutputFlag)
+		writeOutputToFileErr := altOpenAI.WriteAltTextToFile(altText, writeOutputFlag)
 
 		if writeOutputToFileErr != nil{
 			log.Println(color.RedString(`Could not write alt-text to file "%s"`, writeOutputFlag))
@@ -134,7 +121,7 @@ func main(){
 		switch publishTarget{
 			case "s3":
 
-				resultsKey, pubErr := altLlava.PublishAltTextResultsToS3(altText)
+				resultsKey, pubErr := altOpenAI.PublishAltTextResultsToS3(altText)
 
 				if pubErr != nil {
 					log.Println( color.RedString("Could not publish alt-text results to S3: %s", pubErr.Error()) )
