@@ -20,11 +20,15 @@ This will create a binary `alt-openai`.
 
 ### Running
 
-To run with minimal configuration, you will need to set at least 1 environment variable: `IMAGE_URL` with a URL that links to an image. This image will be downloaded and stored at `./images` with a UUID and a file extension derived from the image's MIME type.
+To run with minimal configuration, you will need to set at least 3 environment variables: 
 
-[https://ollama.com](Ollama) must be running locally in order to accept and process the requests.
+1. `IMAGE_URL` - a URL that links to an image. This image will be downloaded and stored at `./images` with a UUID and a file extension derived from the image's MIME type.
 
-`IMAGE_URL=<URL_TO_IMAGE> ./alt-openai`
+2. `OPEN_AI_KEY` - an OpenAI API Key
+
+3. `OPEN_AI_ORIGIN` - the domain that the OpenAI API is accessed at. By default, this should be `api.openai.com`.
+
+`IMAGE_URL=<URL_TO_IMAGE> OPEN_AI_KEY=<API_KEY> OPEN_AI_ORIGIN="api.openai.com" ./alt-openai`
 
 `alt-openai` will then generate the alt-text for the image and log it to the CLI.
 
@@ -38,12 +42,11 @@ If you wish, you can write the output of `alt-openai` to a text file by passing 
 
 ## Environment Variables.
 
-1. `OLLAMA_HOST` - The hostname where the Ollama server is running.
-2. `OLLAMA_PORT` - The port the Ollama server is listening on.
-3. `SILENT_OUTPUT` - Only output the alt-text to `stdout`. Default: `false`
-4. `OLLAMA_MODEL` - The model that Ollama should run to generate the alt-text. Default: `llava`
-5. `OLLAMA_PROTOCOL` - `http` or `https`. Default: `http`
-6. `IMAGE_URL` - The image that should be downloaded, and have alt-text generated for.
-7. `PROMPT_TEXT` - The prompt for the LVM that you'd like to use to describe the intended output for the model.
+1. `OPEN_AI_ORIGIN` - the domain that the the OpenAI API is accessed at,
+2. `OPEN_AI_KEY` - Your OpenAI API Key
+3. `OPEN_AI_MODEL` - The model you want to use to generate the alt-text. `gpt-4-turbo` works fairly well.
+4. `SILENT_OUTPUT` - Only output the alt-text to `stdout`. Default: `false`
+5. `IMAGE_URL` - The image that should be downloaded, and have alt-text generated for.
+6. `PROMPT_TEXT` - The prompt for the LVM that you'd like to use to describe the intended output for the model.
 
 
